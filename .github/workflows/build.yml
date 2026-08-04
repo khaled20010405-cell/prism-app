@@ -23,35 +23,15 @@ jobs:
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
-          cache: true
 
-      - name: Find Project Root and Install dependencies
-        run: |
-          if [ -f "pubspec.yaml" ]; then
-            flutter pub get
-          elif [ -f "prism-app/pubspec.yaml" ]; then
-            cd prism-app
-            flutter pub get
-          else
-            # البحث التلقائي عن مكان وجود ملف pubspec.yaml
-            PROJECT_DIR=$(find . -name "pubspec.yaml" -exec dirname {} \; | head -n 1)
-            echo "Found project in: $PROJECT_DIR"
-            cd "$PROJECT_DIR"
-            flutter pub get
-          fi
+      - name: Get Dependencies
+        run: flutter pub get
 
       - name: Build APK
-        run: |
-          if [ -f "pubspec.yaml" ]; then
-            flutter build apk --release
-          else
-            PROJECT_DIR=$(find . -name "pubspec.yaml" -exec dirname {} \; | head -n 1)
-            cd "$PROJECT_DIR"
-            flutter build apk --release
-          fi
+        run: flutter build apk --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: '**/build/app/outputs/flutter-apk/app-release.apk'
+          path: build/app/outputs/flutter-apk/app-release.apk
